@@ -225,6 +225,58 @@ PAGE_CSS = """
 """
 
 
+AUTH_GATE_CSS = """
+<style>
+    .block-container {
+        max-width: 100% !important;
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
+    }
+    header[data-testid="stHeader"] {
+        background: transparent;
+    }
+    .auth-spacer {
+        height: clamp(1.2rem, 8vh, 4rem);
+    }
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        border-radius: 28px;
+        border: 1px solid rgba(46, 72, 60, 0.12);
+        background: linear-gradient(135deg, rgba(255, 252, 246, 0.98), rgba(248, 252, 249, 0.94));
+        box-shadow: 0 18px 44px rgba(62, 76, 66, 0.10);
+        padding: 0.25rem;
+    }
+    div[data-testid="stTextInputRootElement"] input {
+        background: rgba(255, 249, 238, 0.88);
+    }
+    .stButton > button {
+        height: 2.8rem;
+        border-radius: 14px;
+        font-weight: 700;
+    }
+    .auth-badge-wrap {
+        text-align: center;
+        margin-bottom: 0.8rem;
+    }
+    .auth-badge-wrap .auth-badge {
+        margin-bottom: 0;
+    }
+    .auth-title-tight {
+        margin: 0;
+        color: var(--ink-1);
+        font-size: clamp(1.7rem, 3vw, 2.25rem);
+        line-height: 1.16;
+        font-weight: 800;
+    }
+    .auth-copy-tight {
+        margin: 0.62rem 0 1.05rem;
+        color: var(--ink-2);
+        font-size: 0.96rem;
+        line-height: 1.6;
+    }
+</style>
+"""
+
+
 @st.cache_resource
 def _load_page_icon():
     if LOGO_PATH.exists():
@@ -651,16 +703,14 @@ def _render_results() -> None:
 
 
 def _render_notes() -> None:
-    st.subheader("说明区")
     notes = st.session_state.cleaning_notes
-    if notes:
-        st.write("数据清洗记录：")
-        for note in notes:
-            st.write(f"- {note}")
-    else:
-        st.write("当前尚未执行数据清洗。")
+    if not notes:
+        return
 
-    st.write("如需更复杂的分析，可在左侧填写兼容接口配置；不填写也可直接完成常规可视化操作。")
+    st.subheader("说明区")
+    st.write("数据清洗记录：")
+    for note in notes:
+        st.write(f"- {note}")
 
 
 def _render_empty_state() -> None:
@@ -678,43 +728,38 @@ def _render_password_gate() -> bool:
         return True
 
     st.markdown(PAGE_CSS, unsafe_allow_html=True)
-    st.markdown('<div class="auth-shell">', unsafe_allow_html=True)
-    st.markdown('<div class="auth-wrap">', unsafe_allow_html=True)
-    st.markdown('<div class="auth-card">', unsafe_allow_html=True)
-    st.markdown('<div style="text-align:center;"><span class="auth-badge">Visual Access</span></div>', unsafe_allow_html=True)
-    st.markdown('<h2 class="auth-title">访问验证</h2>', unsafe_allow_html=True)
-    st.markdown('<p class="auth-copy">请输入访问密码后进入工作台。</p>', unsafe_allow_html=True)
-    st.markdown('<div class="auth-input-wrap">', unsafe_allow_html=True)
-    st.markdown('<div class="auth-field-label">访问密码</div>', unsafe_allow_html=True)
+    st.markdown(AUTH_GATE_CSS, unsafe_allow_html=True)
+    st.markdown('<div class="auth-spacer"></div>', unsafe_allow_html=True)
 
-    password = st.text_input(
-        "访问密码",
-        type="password",
-        placeholder="请输入密码",
-        key="password_input",
-        label_visibility="collapsed",
-    )
-    submitted = st.button("进入工作台", type="primary", use_container_width=True)
+    left, center, right = st.columns([1, 1.15, 1])
+    with center:
+        with st.container(border=True):
+            st.markdown('<div class="auth-badge-wrap"><span class="auth-badge">Visual Access</span></div>', unsafe_allow_html=True)
+            st.markdown('<h2 class="auth-title-tight">访问验证</h2>', unsafe_allow_html=True)
+            st.markdown('<p class="auth-copy-tight">请输入访问密码后进入工作台。</p>', unsafe_allow_html=True)
 
-    if submitted:
-        entered = str(password or "").strip()
-        expected = str(FRONTEND_PASSWORD or "").strip() or "24343"
-        if entered == expected:
-            st.session_state.is_authenticated = True
-            st.session_state.auth_error = ""
-            st.rerun()
-        else:
-            st.session_state.auth_error = "密码错误，请重新输入。"
+            password = st.text_input(
+                "访问密码",
+                type="password",
+                placeholder="请输入密码",
+                key="password_input",
+            )
+            submitted = st.button("进入工作台", type="primary", use_container_width=True)
 
-    if st.session_state.auth_error:
-        st.error(st.session_state.auth_error)
+            if submitted:
+                entered = str(password or "").strip()
+                expected = str(FRONTEND_PASSWORD or "").strip() or "24343"
+                if entered == expected:
+                    st.session_state.is_authenticated = True
+                    st.session_state.auth_error = ""
+                    st.rerun()
+                else:
+                    st.session_state.auth_error = "密码错误，请重新输入。"
 
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
+            if st.session_state.auth_error:
+                st.error(st.session_state.auth_error)
+
     return False
-
 
 
 def main() -> None:
