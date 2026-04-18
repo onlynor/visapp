@@ -1,92 +1,112 @@
 # 自然语言数据可视化工作台
 
-基于 `Python + Streamlit + Plotly` 的交互式可视化应用。用户上传 `CSV / Excel` 数据后，可以直接用自然语言生成图表、查看结果摘要，并在有 OpenAI 兼容接口时启用 `LLM 驱动分析`。
+基于 `Python + Streamlit + Plotly` 的交互式数据可视化工作台。默认使用规则分析流程，可选接入 OpenAI 兼容 LLM 做增强解析，失败时自动回退到规则路径。
 
+- 演示站点: https://z.onlynor.cloud/
 ## 功能
 
-- 支持 CSV / Excel 上传
-- 支持数据预览、字段识别、缺失值统计和基础清洗
-- 支持柱状图、折线图、散点图、饼图、热力图
-- 保留规则分析主流程，LLM 只作为可选增强层
-- 支持图表 HTML 导出与汇总结果 CSV 导出
-- 前台访问密码默认启用，通过 `FRONTEND_PASSWORD` 配置
+- CSV / Excel 上传与预览
+- 轻量数据清洗（缺失值填补、去重、IQR 截尾）
+- 自然语言生成柱状图、折线图、散点图、饼图、热力图
+- 多轮指令迭代
+- 图表 HTML 导出与 CSV 汇总导出
+- OpenAI 兼容接口接入（可选）
 
-## 本地运行
+## 项目结构
 
-### uv
+```text
+.
+|-- app.py
+|-- src/vis_app/
+|   |-- app.py
+|   |-- charts.py
+|   |-- data_utils.py
+|   |-- llm.py
+|   `-- nl2viz.py
+|-- data/
+|-- assets/images/
+|-- docs/
+|-- .env.example
+|-- Dockerfile
+|-- pyproject.toml
+|-- requirements.txt
+`-- uv.lock
+```
 
-```bash
+## 环境要求
+
+- Python 3.11+
+- `uv` 或普通 `venv`
+
+## 启动
+
+### 方式 1：`uv`
+
+```powershell
 uv venv
+.\.venv\Scripts\activate
 uv pip install -r requirements.txt
 uv run streamlit run app.py
 ```
 
-### Python venv
+### 方式 2：`venv`
 
-```bash
+```powershell
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
+.\.venv\Scripts\activate
+python -m pip install --upgrade pip
 pip install -r requirements.txt
-streamlit run app.py
+python -m streamlit run app.py
 ```
 
-## 前台密码
+## 配置
 
-- 默认密码通过环境变量 `FRONTEND_PASSWORD` 控制
-- 未配置时默认使用 `24343`
-- UI 页面不再显示默认密码提示
+复制 `.env.example` 为 `.env`：
 
-## Docker 部署
-
-### 构建镜像
-
-```bash
-docker build -t vis-app .
-```
-
-### 准备配置
-
-```bash
+```powershell
 cp .env.example .env
 ```
 
-Windows PowerShell:
+支持的环境变量：
+
+- `FRONTEND_PASSWORD`：前台访问密码
+- `OPENAI_API_KEY`：LLM API Key
+- `OPENAI_BASE_URL`：OpenAI 兼容 API 根地址
+- `OPENAI_MODEL`：模型名称
+
+LLM 接入约束：
+
+- 只支持 OpenAI 兼容接口，不支持 Anthropic 原生接口
+- 优先调用 `/v1/chat/completions`，必要时自动尝试 `/v1/responses`
+- `Base URL` 需填写 API 根地址，不要填写网站首页
+
+## Docker
+
+构建镜像：
 
 ```powershell
-Copy-Item .env.example .env
+docker build -t vis-studio .
 ```
 
-### 运行容器
+运行容器：
 
-```bash
-docker run -d -p 28501:28501 --name vis-app --env-file .env vis-app
+```powershell
+docker run --rm -p 28501:28501 --env-file .env vis-studio
 ```
 
-或者只覆盖前台密码：
+默认端口为 `28501`。
 
-```bash
-docker run -d -p 28501:28501 --name vis-app -e FRONTEND_PASSWORD=your_password vis-app
-```
+## 开发说明
 
-### 访问地址
+- 项目优先使用 `uv` 管理环境与依赖
+- 为兼容普通 Python 环境，仍保留 `requirements.txt`
+- `.env` 不提交，`.env.example` 保留在仓库
 
-- [http://localhost:28501](http://localhost:28501)
+## 文档
 
-### Docker 说明
-
-- 容器内使用系统 Python + `pip install -r requirements.txt`
-- 使用非 root 用户运行
-- 已加入 `HEALTHCHECK`
-- 默认监听 `28501` 端口
-
-## LLM 驱动分析
-
-- 仅支持 OpenAI 兼容接口
-- 不支持 Anthropic 原生接口
-- 支持 `/v1/chat/completions` 与 `/v1/responses`
-- 不兼容 `chat.completions` 时会自动回退到 `responses`
-
-## 文件
-
-- [README.md](/workspace/README.md) 为项目总说明
-- `docs/` 用于存放课程文档和 skill 说明
+- [架构说明](docs/skill_design.md)
+- [Dataset Understanding Skill](docs/skills/dataset_understanding_skill.md)
+- [Cleaning Preparation Skill](docs/skills/cleaning_preparation_skill.md)
+- [Chart Planning Skill](docs/skills/chart_planning_skill.md)
+- [Insight Explanation Skill](docs/skills/insight_explanation_skill.md)
+- [Iteration Refinement Skill](docs/skills/iteration_refinement_skill.md)

@@ -1,4 +1,4 @@
-﻿.venv/
+.venv/
 __pycache__/
 *.py[cod]
 *.pyo
@@ -10,7 +10,11 @@ __pycache__/
 htmlcov/
 .streamlit/secrets.toml
 .env
-.env.*
+.env.local
+.env.development
+.env.production
+.env.test
+!.env.example
 *.log
 Thumbs.db
 Desktop.ini

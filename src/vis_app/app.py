@@ -1,4 +1,4 @@
-﻿from __future__ import annotations
+from __future__ import annotations
 
 from pathlib import Path
 import os
@@ -147,16 +147,11 @@ PAGE_CSS = """
         color: var(--ink-2);
         font-size: 0.9rem;
     }
-    .auth-wrap {
-        max-width: 620px;
-        margin: 3.4rem auto 0;
-    }
-    .auth-card {
-        padding: 1.55rem 1.45rem 1.25rem;
-        border-radius: 24px;
-        background: linear-gradient(135deg, rgba(255, 252, 246, 0.97), rgba(248, 252, 249, 0.92));
-        border: 1px solid var(--line);
-        box-shadow: var(--shadow);
+    .auth-shell {
+        min-height: calc(100vh - 5rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     .auth-title {
         margin: 0;
@@ -181,8 +176,9 @@ PAGE_CSS = """
     }
     .auth-wrap {
         max-width: 640px;
-        margin: 4.5rem auto 0;
+        margin: 0 auto;
         padding: 0 0.6rem;
+        width: 100%;
     }
     .auth-card {
         padding: 1.7rem 1.55rem 1.35rem;
@@ -221,11 +217,9 @@ PAGE_CSS = """
         font-size: 0.98rem;
         line-height: 1.62;
     }
-    .auth-footnote {
-        margin-top: 0.72rem;
-        color: var(--ink-2);
-        font-size: 0.82rem;
-        text-align: center;
+    .auth-input-wrap {
+        max-width: 420px;
+        margin: 0 auto;
     }
 </style>
 """
@@ -684,11 +678,13 @@ def _render_password_gate() -> bool:
         return True
 
     st.markdown(PAGE_CSS, unsafe_allow_html=True)
+    st.markdown('<div class="auth-shell">', unsafe_allow_html=True)
     st.markdown('<div class="auth-wrap">', unsafe_allow_html=True)
     st.markdown('<div class="auth-card">', unsafe_allow_html=True)
     st.markdown('<div style="text-align:center;"><span class="auth-badge">Visual Access</span></div>', unsafe_allow_html=True)
     st.markdown('<h2 class="auth-title">访问验证</h2>', unsafe_allow_html=True)
     st.markdown('<p class="auth-copy">请输入访问密码后进入工作台。</p>', unsafe_allow_html=True)
+    st.markdown('<div class="auth-input-wrap">', unsafe_allow_html=True)
     st.markdown('<div class="auth-field-label">访问密码</div>', unsafe_allow_html=True)
 
     password = st.text_input(
@@ -713,7 +709,8 @@ def _render_password_gate() -> bool:
     if st.session_state.auth_error:
         st.error(st.session_state.auth_error)
 
-    st.markdown('<div class="auth-footnote">输入预设访问密码即可进入。</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
     return False
