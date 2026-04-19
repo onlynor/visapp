@@ -2,8 +2,7 @@
 
 基于 `Python + Streamlit + Plotly` 的交互式数据可视化工作台。默认使用规则分析流程，可选接入 OpenAI 兼容 LLM 做增强解析，失败时自动回退到规则路径。
 
-- 演示站点: https://vis.ccwu.cc/
-- 默认密码: 24343
+- 演示站点: https://visapp.streamlit.app/
 ## 功能
 
 - CSV / Excel 上传与预览
