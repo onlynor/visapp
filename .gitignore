@@ -1,21 +1,38 @@
-.venv/
+# Python
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+.venv/
+*.egg-info/
+dist/
+build/
+
+# uv
+uv.lock
+
+# Testing / Coverage
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
 .coverage
 htmlcov/
+
+# Streamlit
 .streamlit/secrets.toml
+
+# Environment
 .env
 .env.local
 .env.development
 .env.production
 .env.test
 !.env.example
+
+# Logs
 *.log
+
+# OS
 Thumbs.db
 Desktop.ini
 ~$*.docx
