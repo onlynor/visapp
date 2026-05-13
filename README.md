@@ -4,6 +4,8 @@
 
 - 演示站点: https://visapp.streamlit.app/
 - 默认密码: 24343
+- [License: MIT](LICENSE)
+
 ## 功能
 
 - CSV / Excel 上传与预览
