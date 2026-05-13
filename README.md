@@ -4,8 +4,6 @@
 
 - 演示站点: https://visapp.streamlit.app/
 - 默认密码: 24343
-- [License: MIT](LICENSE)
-
 ## 功能
 
 - CSV / Excel 上传与预览
@@ -113,3 +111,7 @@ docker run --rm -p 28501:28501 --env-file .env vis-studio
 - [Chart Planning Skill](docs/skills/chart_planning_skill.md)
 - [Insight Explanation Skill](docs/skills/insight_explanation_skill.md)
 - [Iteration Refinement Skill](docs/skills/iteration_refinement_skill.md)
+
+## 许可证
+
+[MIT](LICENSE)
