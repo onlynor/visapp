@@ -4,6 +4,9 @@
 
 - 演示站点: https://visapp.streamlit.app/
 - 默认密码: 24343
+
+<img src="docs/image.png" alt="主页" width="900">
+
 ## 功能
 
 - CSV / Excel 上传与预览

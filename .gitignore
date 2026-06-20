@@ -8,9 +8,6 @@ __pycache__/
 dist/
 build/
 
-# uv
-uv.lock
-
 # Testing / Coverage
 .pytest_cache/
 .mypy_cache/
