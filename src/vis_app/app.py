@@ -1,14 +1,12 @@
 from __future__ import annotations
 
 from pathlib import Path
-import os
 
 from PIL import Image
 import streamlit as st
 
 
 LOGO_PATH = Path("assets/images/logo.png")
-FRONTEND_PASSWORD = os.getenv("FRONTEND_PASSWORD", "24343")
 
 PAGE_CSS = """
 <style>
@@ -147,132 +145,6 @@ PAGE_CSS = """
         color: var(--ink-2);
         font-size: 0.9rem;
     }
-    .auth-shell {
-        min-height: calc(100vh - 5rem);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .auth-title {
-        margin: 0;
-        color: var(--ink-1);
-        font-size: clamp(1.55rem, 3vw, 2.1rem);
-        line-height: 1.16;
-        font-weight: 800;
-        word-break: break-word;
-        overflow-wrap: anywhere;
-    }
-    .auth-copy {
-        margin: 0.7rem 0 1.15rem;
-        color: var(--ink-2);
-        font-size: 0.98rem;
-        line-height: 1.6;
-    }
-    .auth-field-label {
-        margin: 0 0 0.42rem;
-        color: var(--ink-1);
-        font-size: 0.92rem;
-        font-weight: 700;
-    }
-    .auth-wrap {
-        max-width: 640px;
-        margin: 0 auto;
-        padding: 0 0.6rem;
-        width: 100%;
-    }
-    .auth-card {
-        padding: 1.7rem 1.55rem 1.35rem;
-        border-radius: 26px;
-        background: linear-gradient(135deg, rgba(255, 252, 246, 0.98), rgba(248, 252, 249, 0.94));
-        border: 1px solid var(--line);
-        box-shadow: var(--shadow);
-    }
-    .auth-badge {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0.34rem 0.72rem;
-        border-radius: 999px;
-        background: var(--accent-soft);
-        color: var(--accent);
-        border: 1px solid rgba(52, 111, 90, 0.12);
-        font-size: 0.76rem;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        margin-bottom: 0.9rem;
-    }
-    .auth-title {
-        margin: 0;
-        color: var(--ink-1);
-        font-size: clamp(1.65rem, 3.4vw, 2.3rem);
-        line-height: 1.18;
-        font-weight: 800;
-        overflow-wrap: anywhere;
-        word-break: break-word;
-    }
-    .auth-copy {
-        margin: 0.72rem 0 1.15rem;
-        color: var(--ink-2);
-        font-size: 0.98rem;
-        line-height: 1.62;
-    }
-    .auth-input-wrap {
-        max-width: 420px;
-        margin: 0 auto;
-    }
-</style>
-"""
-
-
-AUTH_GATE_CSS = """
-<style>
-    .block-container {
-        max-width: 100% !important;
-        padding-top: 1rem !important;
-        padding-bottom: 1rem !important;
-    }
-    header[data-testid="stHeader"] {
-        background: transparent;
-    }
-    .auth-spacer {
-        height: clamp(1.2rem, 8vh, 4rem);
-    }
-    div[data-testid="stVerticalBlockBorderWrapper"] {
-        border-radius: 28px;
-        border: 1px solid rgba(46, 72, 60, 0.12);
-        background: linear-gradient(135deg, rgba(255, 252, 246, 0.98), rgba(248, 252, 249, 0.94));
-        box-shadow: 0 18px 44px rgba(62, 76, 66, 0.10);
-        padding: 0.25rem;
-    }
-    div[data-testid="stTextInputRootElement"] input {
-        background: rgba(255, 249, 238, 0.88);
-    }
-    .stButton > button {
-        height: 2.8rem;
-        border-radius: 14px;
-        font-weight: 700;
-    }
-    .auth-badge-wrap {
-        text-align: center;
-        margin-bottom: 0.8rem;
-    }
-    .auth-badge-wrap .auth-badge {
-        margin-bottom: 0;
-    }
-    .auth-title-tight {
-        margin: 0;
-        color: var(--ink-1);
-        font-size: clamp(1.7rem, 3vw, 2.25rem);
-        line-height: 1.16;
-        font-weight: 800;
-    }
-    .auth-copy-tight {
-        margin: 0.62rem 0 1.05rem;
-        color: var(--ink-2);
-        font-size: 0.96rem;
-        line-height: 1.6;
-    }
 </style>
 """
 
@@ -323,8 +195,6 @@ def _init_state() -> None:
     st.session_state.setdefault("llm_connection_status", "")
     st.session_state.setdefault("llm_connection_ok", None)
     st.session_state.setdefault("show_project_intro", False)
-    st.session_state.setdefault("is_authenticated", False)
-    st.session_state.setdefault("auth_error", "")
     st.session_state.setdefault("ui_message", "")
     st.session_state.setdefault("ui_message_type", "info")
 
@@ -723,51 +593,9 @@ def _render_empty_state() -> None:
 
 
 
-def _render_password_gate() -> bool:
-    if st.session_state.is_authenticated:
-        return True
-
-    st.markdown(PAGE_CSS, unsafe_allow_html=True)
-    st.markdown(AUTH_GATE_CSS, unsafe_allow_html=True)
-    st.markdown('<div class="auth-spacer"></div>', unsafe_allow_html=True)
-
-    left, center, right = st.columns([1, 1.15, 1])
-    with center:
-        with st.container(border=True):
-            st.markdown('<div class="auth-badge-wrap"><span class="auth-badge">Visual Access</span></div>', unsafe_allow_html=True)
-            st.markdown('<h2 class="auth-title-tight">访问验证</h2>', unsafe_allow_html=True)
-            st.markdown('<p class="auth-copy-tight">请输入访问密码后进入工作台。</p>', unsafe_allow_html=True)
-
-            password = st.text_input(
-                "访问密码",
-                type="password",
-                placeholder="请输入密码",
-                key="password_input",
-            )
-            submitted = st.button("进入工作台", type="primary", use_container_width=True)
-
-            if submitted:
-                entered = str(password or "").strip()
-                expected = str(FRONTEND_PASSWORD or "").strip() or "24343"
-                if entered == expected:
-                    st.session_state.is_authenticated = True
-                    st.session_state.auth_error = ""
-                    st.rerun()
-                else:
-                    st.session_state.auth_error = "密码错误，请重新输入。"
-
-            if st.session_state.auth_error:
-                st.error(st.session_state.auth_error)
-
-    return False
-
-
 def main() -> None:
     st.set_page_config(page_title="自然语言可视化工作台", page_icon=_load_page_icon(), layout="wide")
     _init_state()
-
-    if not _render_password_gate():
-        return
 
     _render_header()
     _render_ui_message()

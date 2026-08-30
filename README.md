@@ -3,9 +3,8 @@
 基于 `Python + Streamlit + Plotly` 的交互式数据可视化工作台。默认使用规则分析流程，可选接入 OpenAI 兼容 LLM 做增强解析，失败时自动回退到规则路径。
 
 - 演示站点: https://visapp.streamlit.app/
-- 默认密码: 24343
 
-<img src="docs/image.png" alt="主页" width="900">
+<img src="assets/images/image.png" alt="主页" width="900">
 
 ## 功能
 
@@ -29,7 +28,6 @@
 |   `-- nl2viz.py
 |-- data/
 |-- assets/images/
-|-- docs/
 |-- .env.example
 |-- Dockerfile
 |-- pyproject.toml
@@ -71,9 +69,8 @@ python -m streamlit run app.py
 cp .env.example .env
 ```
 
-支持的环境变量：
+支持的环境变量（均为可选）：
 
-- `FRONTEND_PASSWORD`：前台访问密码(默认: 24343)
 - `OPENAI_API_KEY`：LLM API Key
 - `OPENAI_BASE_URL`：OpenAI 兼容 API 根地址
 - `OPENAI_MODEL`：模型名称
@@ -83,6 +80,7 @@ LLM 接入约束：
 - 只支持 OpenAI 兼容接口，不支持 Anthropic 原生接口
 - 优先调用 `/v1/chat/completions`，必要时自动尝试 `/v1/responses`
 - `Base URL` 需填写 API 根地址，不要填写网站首页
+- 不配置环境变量时，可在页面侧边栏手动填写接口信息，或直接使用规则分析
 
 ## Docker
 
@@ -105,15 +103,6 @@ docker run --rm -p 28501:28501 --env-file .env vis-studio
 - 项目优先使用 `uv` 管理环境与依赖
 - 为兼容普通 Python 环境，仍保留 `requirements.txt`
 - `.env` 不提交，`.env.example` 保留在仓库
-
-## 文档
-
-- [架构说明](docs/skill_design.md)
-- [Dataset Understanding Skill](docs/skills/dataset_understanding_skill.md)
-- [Cleaning Preparation Skill](docs/skills/cleaning_preparation_skill.md)
-- [Chart Planning Skill](docs/skills/chart_planning_skill.md)
-- [Insight Explanation Skill](docs/skills/insight_explanation_skill.md)
-- [Iteration Refinement Skill](docs/skills/iteration_refinement_skill.md)
 
 ## 许可证
 
